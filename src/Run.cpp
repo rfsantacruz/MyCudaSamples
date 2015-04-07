@@ -5,12 +5,47 @@
 #include "VectorReduction.h"
 #include "Convolution.h"
 #include <math.h>
+#include <iostream>
+#include <helper_timer.h>
 
-void testConvolution(){
-
+void testConvolution2D(){
 
 	float *in, *mask, *out;
-	int InOut_width = 1024, mask_width = 3;
+	int InOut_width = 512;
+
+
+	in = new float[InOut_width*InOut_width];
+	for (int row = 0; row < InOut_width; row++) {
+		for (int col = 0; col < InOut_width; col++) {
+			in[(row * InOut_width) + col] = 1;
+		}
+	}
+
+	mask = new float[MASK_WIDTH * MASK_WIDTH];
+	for (int row = 0; row < MASK_WIDTH; row++) {
+		for (int col = 0; col < MASK_WIDTH; col++) {
+			mask[(row * MASK_WIDTH) + col] = 1;
+		}
+	}
+
+	out = new float[InOut_width*InOut_width];
+	conv2DHost(in,InOut_width,mask,out);
+	float sumUp = 0.0f;
+	for (int row = 0; row < InOut_width; row++) {
+		for (int col = 0; col < InOut_width; col++) {
+			sumUp += out[(row * InOut_width) + col];
+		}
+
+	}
+	printf("Convolution 2D result: %f\n", sumUp);
+
+	delete[] in; delete[] mask; delete[] out;
+}
+
+void testConvolution1D(){
+
+	float *in, *mask, *out;
+	int InOut_width = 1024;
 
 
 	in = new float[InOut_width];
@@ -18,13 +53,13 @@ void testConvolution(){
 		in[el] = 1;
 	}
 
-	mask = new float[mask_width];
-	for (int el = 0; el < mask_width; el++) {
+	mask = new float[MASK_WIDTH];
+	for (int el = 0; el < MASK_WIDTH; el++) {
 		mask[el] = 1;
 	}
 
 	out = new float[InOut_width];
-	conv1DHost(in,InOut_width,mask,mask_width,out);
+	conv1DHost(in,InOut_width,mask,out);
 	float sumUp = 0.0f;
 	for (int el = 0; el < InOut_width; el++) {
 		sumUp += out[el];
@@ -166,6 +201,10 @@ void testVecAdd(){
 
 int main(){
 
+	StopWatchInterface *timer_compute = NULL;
+	sdkCreateTimer(&timer_compute);
+	sdkStartTimer(&timer_compute);
+
 	//getDeviceInfo();
 
 	//testVecAdd();
@@ -176,6 +215,12 @@ int main(){
 
 	//testVetorReduction();
 
-	testConvolution();
+	//testConvolution1D();
+
+	testConvolution2D();
+
+	sdkStopTimer(&timer_compute);
+	printf(" CPU Processing time : %f (ms)\n", sdkGetTimerValue(&timer_compute));
+	sdkDeleteTimer(&timer_compute);
 
 }
