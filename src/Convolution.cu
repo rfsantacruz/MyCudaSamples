@@ -125,6 +125,7 @@ __global__ void conv2D(float* dev_in, int input_width, float* dev_out){
 	}
 }
 
+//function can be called from device code
 __device__ bool isValid(int x, int y, int limit){
 	bool ret = true;
 

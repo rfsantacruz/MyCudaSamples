@@ -4,9 +4,35 @@
 #include "MatrixVectorMult.h"
 #include "VectorReduction.h"
 #include "Convolution.h"
+#include "prefixSum.h"
 #include <math.h>
 #include <iostream>
 #include <helper_timer.h>
+
+void testPrefixSum(){
+
+	float *in, *out;
+	int length = 1024;
+
+	in = new float[length];
+	for (int el = 0; el < length; el++) {
+		in[el] = el + 1;
+	}
+
+	out = new float[length];
+	prefixSumHost(in,length,out);
+	float sumUp = 0.0f;
+	for (int el = 0; el < length; el++) {
+		sumUp += out[el];
+	}
+
+	//printf("Prefix Sum Expected Result for 1024 input: %f\n", 32896.0f );
+	printf("Prefix Sum Result: %f\n", sumUp);
+
+	delete[] in; delete[] out;
+
+}
+
 
 void testConvolution2D(){
 
@@ -217,10 +243,12 @@ int main(){
 
 	//testConvolution1D();
 
-	testConvolution2D();
+	//testConvolution2D();
+
+	testPrefixSum();
 
 	sdkStopTimer(&timer_compute);
-	printf(" CPU Processing time : %f (ms)\n", sdkGetTimerValue(&timer_compute));
+	printf("CPU Processing time : %f (ms)\n", sdkGetTimerValue(&timer_compute));
 	sdkDeleteTimer(&timer_compute);
 
 }
