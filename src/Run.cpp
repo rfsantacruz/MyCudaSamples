@@ -5,9 +5,37 @@
 #include "VectorReduction.h"
 #include "Convolution.h"
 #include "prefixSum.h"
+#include "Histogram.h"
 #include <math.h>
 #include <iostream>
 #include <helper_timer.h>
+
+void testHistogram(){
+
+	int width = 2048;
+	int *A, *hist;
+	srand (time(NULL));
+
+	A = new int[width];
+	for (int el = 0; el < width; el++) {
+		A[el] = rand() % 256;
+	}
+	hist = new int[256];
+	for (int el = 0; el < 256; el++) {
+			hist[el] = 0;
+	}
+
+	histogramHost(A,width,hist,256);
+
+	double sumUp = 0;
+	for (int el = 0; el < 256; el++) {
+		sumUp += hist[el];
+	}
+
+	printf("Histogram check sum: %f\n", sumUp);
+
+	delete[] A; delete[] hist;
+}
 
 void testPrefixSum(){
 
@@ -32,7 +60,6 @@ void testPrefixSum(){
 	delete[] in; delete[] out;
 
 }
-
 
 void testConvolution2D(){
 
@@ -245,10 +272,12 @@ int main(){
 
 	//testConvolution2D();
 
-	testPrefixSum();
+	//testPrefixSum();
+
+	testHistogram();
 
 	sdkStopTimer(&timer_compute);
-	printf("CPU Processing time : %f (ms)\n", sdkGetTimerValue(&timer_compute));
+	printf("CPU timer : %f (ms)\n", sdkGetTimerValue(&timer_compute));
 	sdkDeleteTimer(&timer_compute);
 
 }
